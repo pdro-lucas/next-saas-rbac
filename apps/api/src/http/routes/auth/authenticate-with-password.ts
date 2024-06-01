@@ -1,8 +1,9 @@
-import { prisma } from '@/lib/prisma'
 import { compare } from 'bcryptjs'
 import type { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import z from 'zod'
+
+import { prisma } from '@/lib/prisma'
 
 export async function authenticateWithPassword(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
@@ -15,6 +16,14 @@ export async function authenticateWithPassword(app: FastifyInstance) {
           email: z.string().email(),
           password: z.string(),
         }),
+        response: {
+          201: z.object({
+            token: z.string(),
+          }),
+          400: z.object({
+            message: z.string(),
+          }),
+        },
       },
     },
     async (request, reply) => {
@@ -48,9 +57,9 @@ export async function authenticateWithPassword(app: FastifyInstance) {
           sign: {
             expiresIn: '7d',
           },
-        }
+        },
       )
       return reply.status(201).send({ token })
-    }
+    },
   )
 }
