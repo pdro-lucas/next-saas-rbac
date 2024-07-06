@@ -84,7 +84,7 @@ export async function getMembers(app: FastifyInstance) {
           },
         )
 
-        return reply.send({ members: membersWithRoles })
+        return reply.status(200).send({ members: membersWithRoles })
       },
     )
 }
